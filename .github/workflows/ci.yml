@@ -1,0 +1,45 @@
+name: Verify
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_call:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6.0.0
+        with:
+          global-json-file: global.json
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+      - name: Build public client
+        working-directory: web
+        run: |
+          npm ci
+          npm run build
+          node ../scripts/check-public-build.mjs
+      - name: Test .NET with a disposable database
+        shell: pwsh
+        run: ./scripts/verify-database.ps1
+      - name: Check C# formatting
+        run: dotnet format whitespace TokenScope.slnx --no-restore --verify-no-changes
+      - name: Verify production image and telemetry
+        shell: pwsh
+        run: ./scripts/verify-isolated.ps1 -ConnectionStringName Database
+      - name: Verify local Claude collection
+        shell: pwsh
+        run: ./scripts/verify-local-usage.ps1 -SkipBuild
+      - name: Stop disposable stack
+        if: always()
+        run: docker compose down --volumes

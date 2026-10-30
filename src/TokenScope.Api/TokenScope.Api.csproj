@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Dapper" Version="2.1.89" />
+    <PackageReference Include="ModelContextProtocol.AspNetCore" Version="2.2.0" />
+    <PackageReference Include="Npgsql.DependencyInjection" Version="10.0.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Infrastructure\Database\schema.sql" CopyToOutputDirectory="PreserveNewest" TargetPath="Database\schema.sql" />
+    <None Update="Features\Demo\seed-demo.sql" CopyToOutputDirectory="PreserveNewest" TargetPath="Database\seed-demo.sql" />
+  </ItemGroup>
+
+</Project>
