@@ -4,7 +4,7 @@ Open an issue for a bug or a proposed behavior change. Include the steps to repr
 
 ## Development setup
 
-Install Docker with Linux container support, the .NET 10 SDK selected by `global.json`, Node.js 24 or later, and PowerShell 7 for the helper scripts.
+Install Docker with Linux container support, the .NET 10 SDK selected by `global.json`, Node.js 26 LTS, and PowerShell 7 for the helper scripts.
 
 From the repository root, start the database and native API:
 
