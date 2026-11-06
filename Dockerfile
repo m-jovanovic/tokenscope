@@ -3,7 +3,9 @@ WORKDIR /sample
 COPY web/package*.json web/
 RUN cd web && npm ci
 COPY web/ web/
-RUN cd web && npm run build
+RUN cd web && npm run build && cd node_modules && \
+    mkdir -p /client-notices && \
+    cp --parents tailwindcss/LICENSE es-toolkit/NOTICE victory-vendor/lib-vendor/*/LICENSE /client-notices/
 
 FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 WORKDIR /src
@@ -16,6 +18,9 @@ FROM mcr.microsoft.com/dotnet/aspnet:10.0
 WORKDIR /app
 COPY --from=build /out/ ./
 COPY --from=client /sample/web/dist/ wwwroot/
+COPY LICENSE ./LICENSE
+COPY licenses/ ./licenses/
+COPY --from=client /client-notices/ ./licenses/
 ENV ASPNETCORE_URLS=http://+:8080
 ENV ASPNETCORE_ENVIRONMENT=Production
 ENV DOTNET_EnableDiagnostics=0

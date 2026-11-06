@@ -84,4 +84,4 @@ The first three sources can overlap; do not add their totals together. Estimated
 
 The app retains allowlisted usage metadata. Analytical rows exclude prompts, responses, tool inputs, raw payloads, and file paths, but optional attribution can contain private names. Review output before sharing it. The live queue is held in memory, so a crash can lose accepted events that have not reached the database. There is no automatic retention policy.
 
-See [architecture](docs/ARCHITECTURE.md), [contributing](CONTRIBUTING.md), and [security](SECURITY.md) for development and operating details. TokenScope is licensed under [MIT](LICENSE).
+See [architecture](docs/ARCHITECTURE.md), [contributing](CONTRIBUTING.md), and [security](SECURITY.md) for development and operating details. TokenScope is licensed under [MIT](LICENSE). The container also includes [license notices for its dependencies](licenses/README.md).
