@@ -46,3 +46,5 @@ Run `npm ci` and `npm run build` in `web` for TypeScript checks and the client b
 The helpers cover database behavior, the production container and HTTP contracts, and growing local session files. Use synthetic fixtures for tests. `verify.ps1` provides read-only checks against a running instance by default; its fixture-import and demo-pulse switches deliberately insert data into their target instance.
 
 Follow `.editorconfig` and the [architecture conventions](docs/ARCHITECTURE.md). Keep endpoints and SQL within their feature slice, parameterize values, and preserve source separation and unknown-cost handling. Add tests for behavior changes and include the checks you ran in the pull request. Contributions use the repository's [MIT license](LICENSE).
+
+Before merging into `main`, bring your branch up to date and wait for the `verify` check to pass on the latest commit.

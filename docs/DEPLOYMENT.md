@@ -81,6 +81,6 @@ The ingestion queue and upload previews are held in memory. A restart discards p
 
 For an upgrade, review the schema changes, back up the database, and test the image against a separate database. Replace the app container with the same connection and collector mounts, then check health, source counts, aggregate refresh status, and a new Claude event. Reverting the container image does not revert schema changes; database recovery may require a backup.
 
-The application is MIT licensed. Publishing requires a reviewed version tag: pushing `v1.0.0`, for example, triggers `publish-image.yml`, runs verification, then publishes the configured `linux/amd64` and `linux/arm64` builds to `ghcr.io/m-jovanovic/tokenscope`. Neither a successful image publication nor testing on both platforms is implied by the workflow configuration.
+To release an image, tag a verified commit on `main` with a version such as `v1.0.0`. The [image workflow](../.github/workflows/publish-image.yml) runs the test suite, then builds and pushes `linux/amd64` and `linux/arm64` images to `ghcr.io/m-jovanovic/tokenscope`.
 
-Keep the repository and package private during review. After explicit approval to publish publicly, review repository and package visibility separately, verify the release artifacts, and test an anonymous pull. A GitHub repository's visibility and its GHCR package's visibility are separate settings.
+GitHub manages repository and package visibility separately. Before announcing a public image, check that the version tag exists in GHCR and pull it without registry credentials.
