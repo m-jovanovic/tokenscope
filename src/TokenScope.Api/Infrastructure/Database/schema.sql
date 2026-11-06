@@ -99,6 +99,9 @@ FROM spend_1h
 GROUP BY 1, source, developer, model, query_source, agent_name, skill_name, mcp_server
 WITH NO DATA;
 
+-- start_offset limits each policy's lookback. A week-old import falls outside the
+-- hourly policy's 3-day window. After importing history, TokenScope explicitly
+-- refreshes the hourly buckets before the daily buckets that depend on them.
 SELECT add_continuous_aggregate_policy('spend_1m',
     start_offset => INTERVAL '2 hours', end_offset => INTERVAL '1 minute',
     schedule_interval => INTERVAL '1 minute', if_not_exists => true);
