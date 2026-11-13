@@ -1,3 +1,4 @@
+using Dapper;
 using Npgsql;
 
 namespace TokenScope.Api.Infrastructure.Database;
@@ -21,11 +22,19 @@ public static class DatabaseSchema
                 await using var connection = await database.OpenConnectionAsync(cancellationToken);
                 await RequireTimescaleAsync(connection, cancellationToken);
 
-                await using var command = new NpgsqlCommand(schemaSql, connection)
-                {
-                    CommandTimeout = 60,
-                };
-                await command.ExecuteNonQueryAsync(cancellationToken);
+                await using var transaction = await connection.BeginTransactionAsync(cancellationToken);
+                // CREATE IF NOT EXISTS can race with uncommitted catalog rows from another startup.
+                await connection.ExecuteAsync(new CommandDefinition(
+                    "SELECT pg_advisory_xact_lock(82014360114738)",
+                    transaction: transaction,
+                    commandTimeout: 60,
+                    cancellationToken: cancellationToken));
+                await connection.ExecuteAsync(new CommandDefinition(
+                    schemaSql,
+                    transaction: transaction,
+                    commandTimeout: 60,
+                    cancellationToken: cancellationToken));
+                await transaction.CommitAsync(cancellationToken);
                 logger.LogInformation("Schema is up to date");
                 return;
             }
@@ -55,9 +64,7 @@ public static class DatabaseSchema
         CancellationToken cancellationToken)
     {
         const string sql = "SELECT EXISTS(SELECT 1 FROM pg_extension WHERE extname='timescaledb')";
-        await using var command = new NpgsqlCommand(sql, connection);
-
-        if (await command.ExecuteScalarAsync(cancellationToken) is not true)
+        if (!await connection.ExecuteScalarAsync<bool>(new CommandDefinition(sql, cancellationToken: cancellationToken)))
         {
             throw new InvalidOperationException(
                 "TimescaleDB is required. Ask the database administrator to enable the timescaledb extension in this database before starting TokenScope. Plain PostgreSQL is not supported.");
