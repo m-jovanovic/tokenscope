@@ -12,7 +12,7 @@ If the server extension is installed but not enabled in the target database, an 
 CREATE EXTENSION IF NOT EXISTS timescaledb;
 ```
 
-The app applies its schema at startup. Its role needs database `CONNECT`, schema `USAGE`/`CREATE`, and ownership of application objects. It must be able to create and alter tables, indexes, continuous aggregates, and refresh policies, and refresh aggregates. A read-only or DML-only role is insufficient. There is no separate migration connection setting.
+The app applies its schema in one PostgreSQL transaction at startup. A transaction-scoped advisory lock serializes simultaneous starts. A failed startup rolls back its schema changes so the next start can retry. Its role needs database `CONNECT`, schema `USAGE`/`CREATE`, and ownership of application objects. It must be able to create and alter tables, indexes, continuous aggregates, and refresh policies, and refresh aggregates. A read-only or DML-only role is insufficient. There is no separate migration connection setting.
 
 Back up retained data before upgrading, and test the new schema against a separate database first.
 
