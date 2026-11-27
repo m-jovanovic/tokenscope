@@ -14,7 +14,7 @@ RUN dotnet restore TokenScope.Api/TokenScope.Api.csproj
 COPY src/TokenScope.Api/ TokenScope.Api/
 RUN dotnet publish TokenScope.Api/TokenScope.Api.csproj -c Release -o /out --no-restore -p:UseAppHost=false
 
-FROM mcr.microsoft.com/dotnet/aspnet:10.0
+FROM mcr.microsoft.com/dotnet/aspnet:11.0
 WORKDIR /app
 COPY --from=build /out/ ./
 COPY --from=client /sample/web/dist/ wwwroot/
